@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>Welcome to LottoWin</h1>
+    <h2>Play and Win Easily</h2>
+    <div class="hero-buttons">
+      <a href="{{ url_for('order') }}" class="btn-primary">🎫 Buy Ticket</a>
+      <a href="{{ url_for('admin') }}" class="btn-secondary">🔑 Admin</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

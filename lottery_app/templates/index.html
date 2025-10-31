@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}መነሻ{% endblock title %}
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1>{{ organization_name }}</h1>
+    <h2><marquee>ONLINE LOTTERY TICKET SERVICE</marquee></h2>
+    <h1><marquee>የብርሃን እናት በዲያቆን ሄኖክ ኃይሌ</marquee></h1>
+    <div class="price-notice" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);">
+        <strong>የአንድ ትኬት ዋጋ: 10 ብር</strong>
+    </div>
+    <div class="hero-buttons">
+      <a href="{{ url_for('apply') }}" class="btn-primary"><i class="fas fa-ticket-alt"></i> ትኬት ይግዙ</a>
+      <a href="{{ url_for('payment_instructions') }}" class="btn-secondary"><i class="fas fa-money-bill-wave"></i> የክፍያ መመሪያ</a>
+    </div>
+  </div>
+</section>
+{% endblock content %}

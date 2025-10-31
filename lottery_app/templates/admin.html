@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+{% block content %}
+  <div class="card center-card">
+    <h1>🎟️ Ticket Orders</h1>
+    <table border="1" cellpadding="10" style="width:100%; border-collapse:collapse;">
+      <tr><th>Name</th><th>Numbers</th><th>Phone</th><th>Date</th></tr>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.name }}</td>
+        <td>{{ o.numbers }}</td>
+        <td>{{ o.phone }}</td>
+        <td>{{ o.created_at }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4">No tickets yet.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

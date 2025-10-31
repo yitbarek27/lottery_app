@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>አስተዳዳሪ መግቢያ - {{ organization_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-dice"></i>
+                <span>{{ organization_name }}</span>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}" class="nav-link">መነሻ/HOME</a>
+                <a href="{{ url_for('apply') }}" class="nav-link">ትኬት ይግዙ/DRAW A TICKRT</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="admin-login-container">
+        <div class="admin-login-card">
+            <h1><i class="fas fa-lock"></i> የአስተዳዳሪ መግቢያ/ADMIN LOGIN</h1>
+            <p class="admin-subtitle">የተገደበ ቦታ/RESTRICTED PLACE</p>
+
+            <div class="admin-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                ለተፈቀደላቸው ሰዎች ብቻ/FOR AUTHORISED PERSON ONLY
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" class="order-form">
+                <div class="form-group">
+                    <label for="username">የተጠቃሚ ስም/ADMIN USERNAME</label>
+                    <input type="text" id="username" name="username" required placeholder="የአስተዳዳሪ የተጠቃሚ ስም ያስገቡ">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">የይለፍ ቃል/PASSWORD</label>
+                    <input type="password" id="password" name="password" required placeholder="የአስተዳዳሪ ይለፍ ቃል ያስገቡ">
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-sign-in-alt"></i>
+                    ወደ አስተዳዳሪ ገፅ ይግቡ/LOGIN TO ADMIN PANEL
+                </button>
+            </form>
+
+            <a href="{{ url_for('home') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                ወደ መነሻ ተመለስ/RETURN TO HOME
+            </a>
+        </div>
+    </div>
+</body>
+</html>

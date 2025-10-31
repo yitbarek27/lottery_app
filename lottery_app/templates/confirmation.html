@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}የተጠየቀ{% endblock title %}
+{% block content %}
+<div class="confirmation-container">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>በተሳካ ሁኔታ ተጠይቋል!</h1>
+            <p>የ{{ organization_name }} ትኬት መጠየቂያዎ ተቀብለናል።</p>
+
+            <div class="confirmation-code">
+                የማረጋገጫ ኮድ: <strong>{{ application.confirmation_code }}</strong>
+            </div>
+
+            <div class="application-details">
+                <h3>የእርስዎ መረጃ</h3>
+                <p><strong>ስም:</strong> <span>{{ application.full_name }}</span></p>
+                <p><strong>ስልክ:</strong> <span>{{ application.phone }}</span></p>
+                <p><strong>ዕጣ:</strong>
+                    <span>
+                        {% for draw in draws_data %}
+                            {% if draw.id == application.draw|int %}
+                                {{ draw.name }}
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </p>
+                <p><strong>የትኬት ዋጋ:</strong> <span>10 ብር</span></p>
+                <p><strong>የክፍያ ዘዴ:</strong>
+                    <span>
+                        {% if application.payment_method == 'telebirr' %}
+                            TeleBirr
+                        {% elif application.payment_method == 'cbe_mobile' %}
+                            CBE Mobile Banking
+                        {% elif application.payment_method == 'cash' %}
+                            በገንዘብ (ለአስተዳዳሪ)
+                        {% else %}
+                            ያልታወቀ
+                        {% endif %}
+                    </span>
+                </p>
+                {% if application.transaction_id %}
+                <p><strong>የትራንዛክሽን ቁጥር:</strong> <span>{{ application.transaction_id }}</span></p>
+                {% endif %}
+            </div>
+
+            <div class="next-steps">
+                <h4><i class="fas fa-list-ol"></i> ለማድረግ ያለብዎት ነገሮች</h4>
+                <ol>
+                    <li>የማረጋገጫ ኮድዎን ይተምሩ ወይም ይፃፉ</li>
+                    <li>ይህንን ኮድ ለአስተዳዳሪ አሳይተው ክፍያዎን ያከናውኑ (በገንዘብ ከሆነ)</li>
+                    <li>ለክፍያ ዘዴዎ መመሪያዎችን ይከተሉ እና ትራንዛክሽን ቁጥሩን ለአስተዳዳሪ ያሳውቁ (ኦንላይን ከሆነ)</li>
+                    <li>አስተዳዳሪ ክፍያዎን ከተፈጸመ በኋላ ትኬትዎ ይሞላል</li>
+                    <li>የዕጣ ውጤት በስልክዎ ይጠበቃል</li>
+                </ol>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ url_for('payment_instructions') }}" class="cta-button">
+                    <i class="fas fa-credit-card"></i>
+                    የክፍያ መመሪያ ይመልከቱ
+                </a>
+                <a href="{{ url_for('home') }}" class="back-link">
+                    <i class="fas fa-home"></i>
+                    ወደ መነሻ ተመለስ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

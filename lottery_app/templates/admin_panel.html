@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}አስተዳዳሪ ፓነል{% endblock title %}
+{% block content %}
+<div class="admin-panel-container container">
+    <div class="admin-panel-header">
+        <h1><i class="fas fa-cogs"></i> አስተዳዳሪ ፓነል</h1>
+        <a href="{{ url_for('admin_logout') }}" class="admin-logout-btn"><i class="fas fa-sign-out-alt"></i> ውጣ</a>
+    </div>
+
+    <div class="admin-stats-grid">
+        <div class="stat-card">
+            <h3>{{ applications|length }}</h3>
+            <p>ጠቅላላ ጥያቄዎች</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ applications|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+            <p>በመጠባበቅ ላይ</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ applications|selectattr('status', 'equalto', 'verified')|list|length }}</h3>
+            <p>ክፍያ የተረጋገጠ</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ applications|selectattr('status', 'equalto', 'paid')|list|length }}</h3>
+            <p>ትኬት የተሞላ</p>
+        </div>
+    </div>
+
+    <!-- Transaction Validation Tools -->
+    <div class="transaction-validation-tools">
+        <h3><i class="fas fa-search"></i> የትራንዛክሽን ቁጥር ማረጋገጫ</h3>
+        <div class="validation-form">
+            <input type="text" id="validate_transaction_id" placeholder="ትራንዛክሽን ቁጥር ያስገቡ">
+            <select id="validate_payment_method">
+                <option value="telebirr">TeleBirr</option>
+                <option value="cbe_mobile">CBE Mobile</option>
+            </select>
+            <button onclick="validateTransactionManual()" class="action-btn verify-btn">
+                <i class="fas fa-check"></i> አረጋግጥ
+            </button>
+        </div>
+        <div id="manual_validation_result" style="margin-top: 10px;"></div>
+    </div>
+
+    <h2><i class="fas fa-list-alt"></i> የትኬት ጥያቄዎች</h2>
+    <div class="applications-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>መለያ</th>
+                    <th>ሙሉ ስም</th>
+                    <th>ስልክ</th>
+                    <th>ዕጣ / ኮድ / Tx</th>
+                    <th>የክፍያ ዘዴ</th>
+                    <th>ዋጋ</th>
+                    <th>ሁኔታ</th>
+                    <th>የተጠየቀበት ጊዜ</th>
+                    <th>ተግባር</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app.id }}</td>
+                    <td>{{ app.full_name }}</td>
+                    <td>{{ app.phone }}</td>
+                    <td>
+                        <strong>ዕጣ: {{ app.draw }}</strong><br>
+                        <small>ኮድ: {{ app.confirmation_code }}</small><br>
+                        {% if app.transaction_id %}
+                            <small style="color: #666;">Tx: {{ app.transaction_id }}</small>
+                            {% if app.transaction_validated %}
+                                <br><span style="color: green; font-size: 0.8rem;">✓ ተረጋግጧል</span>
+                            {% else %}
+                                <br><span style="color: orange; font-size: 0.8rem;">⏳ ማረጋገጥ አለበት</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if app.payment_method == 'telebirr' %}
+                            TeleBirr
+                        {% elif app.payment_method == 'cbe_mobile' %}
+                            CBE Mobile
+                        {% elif app.payment_method == 'cash' %}
+                            በገንዘብ
+                        {% else %}
+                            ያልታወቀ
+                        {% endif %}
+                    </td>
+                    <td>{{ app.ticket_price }} ብር</td>
+                    <td>
+                        {% if app.status == 'pending' %}
+                            <span class="status-pending">በመጠባበቅ ላይ</span>
+                        {% elif app.status == 'verified' %}
+                            <span class="status-verified">የተረጋገጠ</span>
+                        {% elif app.status == 'paid' %}
+                            <span class="status-paid">የተከፈለ</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ app.created_at }}</td>
+                    <td>
+                        {% if app.status == 'pending' %}
+                            <a href="{{ url_for('verify_payment', app_id=app.id) }}" class="action-btn verify-btn">ክፍያ አረጋግጥ</a>
+                        {% elif app.status == 'verified' %}
+                            <a href="{{ url_for('mark_paid', app_id=app.id) }}" class="action-btn paid-btn">ትኬት ሞላ</a>
+                        {% else %}
+                            <span>የተጠናቀቀ</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9">ምንም የትኬት ጥያቄዎች የሉም።</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+{% block scripts %}
+<script>
+function validateTransactionManual() {
+    const transactionId = document.getElementById('validate_transaction_id').value;
+    const paymentMethod = document.getElementById('validate_payment_method').value;
+    const resultDiv = document.getElementById('manual_validation_result');
+
+    if (!transactionId) {
+        resultDiv.innerHTML = '<div style="color: #c53030; background: #fed7d7; padding: 10px; border-radius: 5px;"><i class="fas fa-exclamation-triangle"></i> እባክዎ ትራንዛክሽን ቁጥር ያስገቡ</div>';
+        return;
+    }
+
+    fetch('/validate-transaction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            transaction_id: transactionId,
+            payment_method: paymentMethod
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            resultDiv.innerHTML = `<div style="color: #276749; background: #c6f6d5; padding: 10px; border-radius: 5px;">
+                <i class="fas fa-check-circle"></i> ${data.message}
+            </div>`;
+        } else {
+            let html = `<div style="color: #c53030; background: #fed7d7; padding: 10px; border-radius: 5px;">
+                <i class="fas fa-exclamation-triangle"></i> ${data.message}`;
+
+            if (data.suggestions && data.suggestions.length > 0) {
+                html += '<br><strong>ምክሮች:</strong><ul style="margin: 10px 0 0 20px;">';
+                data.suggestions.forEach(suggestion => {
+                    html += `<li>${suggestion}</li>`;
+                });
+                html += '</ul>';
+            }
+            html += '</div>';
+            resultDiv.innerHTML = html;
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = '<div style="color: #c53030; background: #fed7d7; padding: 10px; border-radius: 5px;"><i class="fas fa-times-circle"></i> የማረጋገጫ ስህተት ተከስቷል</div>';
+        console.error('Error:', error);
+    });
+}
+</script>
+{% endblock scripts %}

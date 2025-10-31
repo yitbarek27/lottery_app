@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}ትኬት ይግዙ - {{ organization_name }}{% endblock %}
+{% block content %}
+<div class="container" style="padding: 120px 0 80px;">
+    <div class="order-form">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #2d3748;">
+            <i class="fas fa-ticket-alt"></i>
+            ትኬት ይግዙ
+        </h1>
+
+        <div class="price-notice">
+            <i class="fas fa-tag"></i>
+            <strong>የአንድ ትኬት ዋጋ: ብር 1,300</strong>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            <div class="form-group">
+                <label for="full_name"><i class="fas fa-user"></i> ሙሉ ስም</label>
+                <input type="text" id="full_name" name="full_name" required placeholder="ሙሉ ስምዎን ያስገቡ">
+            </div>
+
+            <div class="form-group">
+                <label for="phone"><i class="fas fa-phone"></i> ስልክ ቁጥር</label>
+                <input type="tel" id="phone" name="phone" required placeholder="+2519XXXXXXX">
+            </div>
+
+            <div class="form-group">
+                <label for="draw"><i class="fas fa-dice"></i> የሚገዙት ዕጣ</label>
+                <select id="draw" name="draw" required>
+                    <option value="">-- ዕጣ ይምረጡ --</option>
+                    {% for draw in draws_data %}
+                        <option value="{{ draw.id }}">{{ draw.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="payment_method"><i class="fas fa-wallet"></i> የክፍያ ዘዴ</label>
+                <select id="payment_method" name="payment_method" required onchange="toggleTransactionId()">
+                    <option value="">-- የክፍያ ዘዴ ይምረጡ --</option>
+                    <option value="telebirr">TeleBirr</option>
+                    <option value="cbe_mobile">CBE Mobile Banking</option>
+                    <option value="cash">በገንዘብ</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="transaction_id_group" style="display: none;">
+                <label for="transaction_id"><i class="fas fa-receipt"></i> የትራንዛክሽን ቁጥር</label>
+                <input type="text" id="transaction_id" name="transaction_id" 
+                       placeholder="የክፍያ ትራንዛክሽን ቁጥር">
+            </div>
+
+            <button type="submit" class="submit-button">
+                <i class="fas fa-paper-plane"></i>
+                ያመልክቱ
+            </button>
+        </form>
+
+        <a href="{{ url_for('payment_instructions') }}" class="back-link">
+            <i class="fas fa-credit-card"></i>
+            የክፍያ መመሪያዎችን ይመልከቱ
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleTransactionId() {
+    const paymentMethod = document.getElementById('payment_method').value;
+    const transactionIdGroup = document.getElementById('transaction_id_group');
+    const transactionIdInput = document.getElementById('transaction_id');
+    
+    if (paymentMethod === 'telebirr' || paymentMethod === 'cbe_mobile') {
+        transactionIdGroup.style.display = 'block';
+        transactionIdInput.required = true;
+    } else {
+        transactionIdGroup.style.display = 'none';
+        transactionIdInput.required = false;
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleTransactionId();
+});
+</script>
+{% endblock %}

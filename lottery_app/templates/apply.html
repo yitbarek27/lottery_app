@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}ትኬት ይግዙ{% endblock title %}
+{% block content %}
+  <div class="card center-card">
+    <h1><i class="fas fa-ticket-alt"></i> የዕጣ ትኬት ይግዙ</h1>
+    <p class="price-notice">የአንድ ትኬት ዋጋ: <strong>10 ብር</strong></p>
+    <form method="post" class="order-form">
+      <div class="form-group">
+        <label for="full_name">ሙሉ ስም</label>
+        <input id="full_name" name="full_name" type="text" required placeholder="ሙሉ ስም ያስገቡ">
+      </div>
+
+      <div class="form-group">
+        <label for="phone">ስልክ ቁጥር</label>
+        <input id="phone" name="phone" type="text" required placeholder="+2519XXXXXXXX" pattern="^\+2519[0-9]{8}$" title="የስልክ ቁጥርዎ +2519XXXXXXXX መሆን አለበት።">
+      </div>
+
+      <div class="form-group">
+        <label for="draw">የዕጣ ቁጥር ይምረጡ (1–300)</label>
+        <select id="draw" name="draw" required>
+          <option value="">የዕጣ ቁጥርዎን ይምረጡ </option>
+          {% for draw in draws_data %}
+          <option value="{{ draw.id }}">{{ draw.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="payment_method">የክፍያ ዘዴ ይምረጡ</label>
+        <select id="payment_method" name="payment_method" required onchange="toggleTransactionId()">
+            <option value="">የክፍያ ዘዴ ይምረጡ --</option>
+            <option value="telebirr">TeleBirr</option>
+            <option value="cbe_mobile">CBE Mobile Banking</option>
+            <option value="cash">በገንዘብ (ለአስተዳዳሪ)</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="transaction_id_group" style="display:none;">
+        <label for="transaction_id">የትራንዛክሽን ቁጥር</label>
+        <input id="transaction_id" name="transaction_id" type="text" placeholder="ከክፍያ በኋላ የተገኘ ትራንዛክሽን ቁጥር" autocomplete="off">
+        <div id="transaction_validation"></div>
+      </div>
+
+      <button type="submit" class="submit-button">
+        <i class="fas fa-paper-plane"></i>
+        ትኬት ይላኩ
+      </button>
+    </form>
+  </div>
+{% endblock content %}
+{% block scripts %}
+<script>
+function toggleTransactionId() {
+    const paymentMethod = document.getElementById('payment_method').value;
+    const transactionIdGroup = document.getElementById('transaction_id_group');
+    const transactionIdInput = document.getElementById('transaction_id');
+
+    if (paymentMethod === 'telebirr' || paymentMethod === 'cbe_mobile') {
+        transactionIdGroup.style.display = 'block';
+        transactionIdInput.required = true;
+        transactionIdInput.addEventListener('input', validateTransactionIdRealTime);
+    } else {
+        transactionIdGroup.style.display = 'none';
+        transactionIdInput.required = false;
+        transactionIdInput.value = '';
+        transactionIdInput.removeEventListener('input', validateTransactionIdRealTime);
+        hideValidationMessage();
+    }
+}
+
+function validateTransactionIdRealTime() {
+    const transactionId = document.getElementById('transaction_id').value;
+    const paymentMethod = document.getElementById('payment_method').value;
+    const submitButton = document.querySelector('.submit-button');
+
+    if (!transactionId.trim()) {
+        hideValidationMessage();
+        submitButton.disabled = true;
+        return;
+    }
+
+    const issues = [];
+
+    if (transactionId.length < 5) {
+        issues.push('በጣም አጭር ነው (ቢያንስ 5 አሃዝ መሆን አለበት)');
+    }
+
+    if (transactionId.length > 25) {
+        issues.push('በጣም ረጅም ነው (ከ25 አሃዝ በላይ አይሁን)');
+    }
+
+    if (transactionId === 'TBR123456789' || transactionId === 'CBE123456789') {
+        issues.push('ይህ ምሳሌ ቁጥር ነው - እውነተኛ ትራንዛክሽን ቁጥር ያስገቡ');
+    }
+
+    if (paymentMethod === 'telebirr' && !transactionId.startsWith('TBR')) {
+        issues.push('የTeleBirr ትራንዛክሽን በ TBR መጀመር አለበት');
+    }
+
+    if (paymentMethod === 'cbe_mobile' && !transactionId.startsWith('CBE')) {
+        issues.push('የCBE ትራንዛክሽን በ CBE መጀመር አለበት');
+    }
+
+    if (issues.length > 0) {
+        showValidationMessage(issues, 'error');
+        submitButton.disabled = true;
+    } else {
+        showValidationMessage(['የትራንዛክሽን ቁጥር ቅርፅ ትክክል ይመስላል'], 'success');
+        submitButton.disabled = false;
+    }
+}
+
+function showValidationMessage(messages, type) {
+    let validationDiv = document.getElementById('transaction_validation');
+
+    if (!validationDiv) {
+        validationDiv = document.createElement('div');
+        validationDiv.id = 'transaction_validation';
+        validationDiv.style.marginTop = '10px';
+        validationDiv.style.padding = '10px';
+        validationDiv.style.borderRadius = '5px';
+        validationDiv.style.fontSize = '0.9rem';
+        const transactionIdGroup = document.getElementById('transaction_id_group');
+        if (transactionIdGroup) {
+            transactionIdGroup.appendChild(validationDiv);
+        }
+    }
+
+    validationDiv.innerHTML = messages.map(msg =>
+        `<div style="margin: 5px 0;"><i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> ${msg}</div>`
+    ).join('');
+
+    validationDiv.style.background = type === 'error' ? '#fed7d7' : '#c6f6d5';
+    validationDiv.style.color = type === 'error' ? '#c53030' : '#276749';
+    validationDiv.style.border = type === 'error' ? '1px solid #feb2b2' : '1px solid #9ae6b4';
+}
+
+function hideValidationMessage() {
+    const validationDiv = document.getElementById('transaction_validation');
+    if (validationDiv) {
+        validationDiv.remove();
+    }
+    const submitButton = document.querySelector('.submit-button');
+    if (submitButton) {
+        const paymentMethod = document.getElementById('payment_method').value;
+        if (paymentMethod === 'cash') {
+            submitButton.disabled = false;
+        } else {
+            const transactionIdInput = document.getElementById('transaction_id');
+            if (transactionIdInput.required && !transactionIdInput.value.trim()) {
+                 submitButton.disabled = true;
+            } else {
+                 submitButton.disabled = false;
+            }
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const transactionIdInput = document.getElementById('transaction_id');
+    if (transactionIdInput) {
+        transactionIdInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+            e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '');
+        });
+    }
+    toggleTransactionId();
+});
+</script>
+{% endblock scripts %}

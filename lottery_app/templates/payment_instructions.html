@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}የክፍያ መመሪያ{% endblock title %}
+{% block content %}
+<div class="instructions-container">
+    <div class="container">
+        <div class="instructions-card">
+            <h1><i class="fas fa-credit-card"></i> የክፍያ መመሪያዎች/PAYMENT INSTRUCTION</h1>
+            <p class="price-notice">የአንድ ትኬት ዋጋ/SINGLE TICKET PRICE: <strong>10 ETB ብር</strong></p>
+
+            <div class="important-note">
+                <h4><i class="fas fa-exclamation-triangle"></i> አስፈላጊ</h4>
+                <p>ክፍያ ከማድረግዎ በፊት <a href="{{ url_for('apply') }}" style="font-weight: bold;">ትኬት መጠየቂያ ቅጽ መሙላትን</a> እና የማረጋገጫ ኮድ መቀበልን አስታውሱ!  / Remember to fill out the ticket request form and receive a confirmation code before making a payment!</p>
+            </div>
+
+            <!-- TeleBirr Instructions -->
+            <div class="payment-method">
+                <h3><i class="fas fa-mobile-alt"></i> በ TeleBirr ለመክፈል</h3>
+                <ol class="steps">
+                    <li>TeleBirr አፕልኬሽንዎን ይክፈቱ</li>
+                    <li>"Send Money" የሚለውን ይምረጡ</li>
+                    <li>የሚከተለውን ስልክ ቁጥር ያስገቡ: <strong>+251936114505</strong></li>
+                    <li>መጠኑን ያስገቡ: <strong>10 ብር</strong></li>
+                    <li>የክፍያ አላማ: <strong>{{ organization_name }} ትኬት</strong></li>
+                    <li>PIN ያስገቡ እና ክፍያውን ያጠናቅቁ</li>
+                    <li><span style="font-weight: bold; color: #c53030;">ከተከፈለ በኋላ የሚሰጠውን ትራንዛክሽን ቁጥር መፃፍዎን አይርሱ!</span></li>
+                    <li>የተገኘውን ትራንዛክሽን ቁጥር በቲኬት ማመልከቻ ቅጹ ላይ ያስገቡ።</li>
+                </ol>
+            </div>
+
+            <!-- CBE Mobile Instructions -->
+            <div class="payment-method">
+                <h3><i class="fas fa-university"></i> በ CBE Mobile Banking ለመክፈል</h3>
+                <ol class="steps">
+                    <li>CBE Mobile Banking አፕልኬሽንዎን ይክፈቱ</li>
+                    <li>"Transfer" የሚለውን ይምረጡ</li>
+                    <li>የሚከተለውን ሂሳብ ቁጥር ያስገቡ: <strong>1000697169966</strong></li>
+                    <li>መጠኑን ያስገቡ: <strong>10 ብር</strong></li>
+                    <li>የክፍያ አላማ: <strong>{{ organization_name }} ትኬት</strong></li>
+                    <li>MPIN ያስገቡ እና ክፍያውን ያጠናቅቁ</li>
+                    <li><span style="font-weight: bold; color: #c53030;">ከተከፈለ በኋላ የሚሰጠውን ትራንዛክሽን ቁጥር መፃፍዎን አይርሱ!</span></li>
+                    <li>የተገኘውን ትራንዛክሽን ቁጥር በቲኬት ማመልከቻ ቅጹ ላይ ያስገቡ።</li>
+                </ol>
+            </div>
+
+            <!-- Cash Payment Instructions -->
+            <div class="payment-method">
+                <h3><i class="fas fa-money-bill-wave"></i> በገንዘብ ለመክፈል</h3>
+                <ol class="steps">
+                    <li>ወደ ቅርብ የ{{ organization_name }} አስተዳዳሪ ይሂዱ</li>
+                    <li>የማረጋገጫ ኮድዎን አሳይተው</li>
+                    <li>10 ብር ይክፈሉ</li>
+                    <li>ከአስተዳዳሪ የክፍያ ማረጋገጫ ይጠይቁ</li>
+                    <li>ትኬትዎ በተሞላ ቁጥር ማሳወቂያ ይጠብቁ</li>
+                </ol>
+            </div>
+
+            <div class="contact-info">
+                <h3><i class="fas fa-headset"></i> ለበለጠ መረጃ</h3>
+                <p>ስልክ: <strong>+251936114505</strong></p>
+                <p>Telegram: <strong>https://t.me/April_25_2017</strong></p>
+                <p>አድራሻ: <strong>ባህርዳር ዩኒቨርሲቲ/BAHIRDAR UNIVERSITY</strong></p>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{{ url_for('apply') }}" class="cta-button">
+                    <i class="fas fa-ticket-alt"></i>
+                    አሁን ትኬት ይግዙ
+                </a>
+                <a href="{{ url_for('home') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    ወደ መነሻ ተመለስ/BACK TO HOME
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

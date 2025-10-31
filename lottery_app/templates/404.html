@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ገጽ አልተገኘም - {{ organization_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-dice"></i>
+                <span>{{ organization_name }}</span>
+            </div>
+            <nav class="nav">
+                <a href="{{ url_for('home') }}" class="nav-link">መነሻ</a>
+                <a href="{{ url_for('apply') }}" class="nav-link">ትኬት ይግዙ</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="error-container">
+        <div class="error-content">
+            <h1><i class="fas fa-exclamation-triangle"></i> 404</h1>
+            <h2>ገጽ አልተገኘም</h2>
+            <p>የሚፈልጉት ገጽ የለም ወይም ለመግባት ፍቃድ የለዎትም።</p>
+            <a href="{{ url_for('home') }}" class="cta-button">
+                <i class="fas fa-home"></i>
+                ወደ መነሻ ተመለስ
+            </a>
+        </div>
+    </div>
+</body>
+</html>
